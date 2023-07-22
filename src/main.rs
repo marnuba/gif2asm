@@ -87,7 +87,16 @@ fn main() {
 
     // write palette
     if let Some(pal) = decoder.global_palette() {
-        println!("sprite_lut:");
+        
+        // write #entries in palette
+        if let Some(file) = &mut clutfile {
+            file.write_all(&[pal.len() as u8]).expect("error writing to clut file");
+        }
+
+        if let Some(file) = &mut asmfile {
+            write!(file, ".byte {:02X}", pal.len())
+                .expect("error writing to asm file");
+        }
 
         for i in (0..pal.len()).step_by(3) {
 
@@ -101,7 +110,7 @@ fn main() {
 
             if let Some(file) = &mut clutfile {
                 file.write_all(&[pal[i+2], pal[i+1], pal[i], 0x00])
-                .expect("error writing to lut file");
+                .expect("error writing to clut file");
             }
         }
     }
@@ -117,11 +126,11 @@ fn main() {
             if let Some(file) = &mut asmfile {
                 write!(file, ".byte").expect("error writing to asm file");
                 for w in 0..frame.width-1 {
-                    let ix = h*frame.width + w;
+                    let ix = h as usize * frame.width as usize + w as usize;
                     write!(file, " ${:02X},", frame.buffer[ix as usize])
                         .expect("error writing to asm file");
                 }
-                write!(file, " ${:02X}\n", frame.buffer[((h+1)*frame.width-1) as usize])
+                write!(file, " ${:02X}\n", frame.buffer[(h+1) as usize * (frame.width-1) as usize])
                     .expect("error writing to asm file");
             }
             
