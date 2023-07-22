@@ -148,7 +148,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "gif2code"
+name = "gif2asm"
 version = "0.1.0"
 dependencies = [
  "clap",

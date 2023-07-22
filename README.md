@@ -1,4 +1,4 @@
-# gif2code
+# gif2asm
 
 This is a tool to convert a gif image into data that can easily be used in common 8-bit assemblers. The main target platform is the Foenix family of computers, but it might be useful for other vinatage and retro systems as well.
 
@@ -8,11 +8,11 @@ Other tools are available to convert images as well (e.g. FoenixIDE). This tool 
 
 ## Usage
 
-gif2code <INPUT.GIF>
+gif2asm <INPUT.GIF>
 
 This produces an INPUT.asm file that can be included by the given assembler.
 
-gif2code --bin <INPUT.GIF>
+gif2asm --bin <INPUT.GIF>
 
 This produces two files: INPUT.clut and INPUT.bin. These files can be used from an assembler by including them as binary files.
 
