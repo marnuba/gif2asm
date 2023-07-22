@@ -36,6 +36,7 @@ fn main() {
         args.asm = true;
     }
 
+    // output file names & label
     let input = File::open(&args.infile)
         .expect("Could not open input file.");
         
@@ -50,7 +51,6 @@ fn main() {
 
     let labelpath = imgpath.clone();
     let label = String::from(labelpath.file_stem().unwrap().to_string_lossy());
-
 
     // open files for writing
     let mut asmfile = if args.asm {
@@ -73,31 +73,29 @@ fn main() {
     } else {
         None
     };
-
     
+    // decode gif file 
     let mut opts = DecodeOptions::new();
 
     opts.set_color_output(gif::ColorOutput::Indexed);
     let mut decoder = opts.read_info(input).unwrap();
 
-    if let Some(file) = &mut asmfile {
-        write!(file, "\n{}_clut:\n", label)
-        .expect("error writing to asm file");
-    }
-
     // write palette
     if let Some(pal) = decoder.global_palette() {
-        
-        // write #entries in palette
-        if let Some(file) = &mut clutfile {
-            file.write_all(&[pal.len() as u8]).expect("error writing to clut file");
-        }
 
+        // write label for clut
         if let Some(file) = &mut asmfile {
-            write!(file, ".byte {:02X}", pal.len())
+            write!(file, "\n{}_clut:\n", label)
+            .expect("error writing to asm file");
+        }
+                
+        // write #entries in clut
+        if let Some(file) = &mut asmfile {
+            write!(file, ".byte {:02X}\n", pal.len())
                 .expect("error writing to asm file");
         }
 
+        // write palette
         for i in (0..pal.len()).step_by(3) {
 
             if let Some(file) = &mut asmfile {
@@ -115,6 +113,7 @@ fn main() {
         }
     }
 
+    // write label for image data
     if let Some(file) = &mut asmfile {
         write!(file, "\n{}_img:\n", label)
         .expect("error writing to asm file");
@@ -132,15 +131,12 @@ fn main() {
                 }
                 write!(file, " ${:02X}\n", frame.buffer[(h+1) as usize * (frame.width-1) as usize])
                     .expect("error writing to asm file");
-            }
-            
-            
+            }            
         }
 
         if let Some(file) = &mut imgfile {
             file.write_all(&frame.buffer).expect("error writing to img file");
         }
-        
     }
 }
 
@@ -154,7 +150,6 @@ fn check_filename(filename: &String) {
     }
 
     if let Some(ext) = filepath.extension() {
-
         let exts = ext.to_string_lossy();
         if exts.to_lowercase() != "gif" {
             println!("input file needs to have the gif extension");
