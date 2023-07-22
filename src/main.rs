@@ -91,7 +91,7 @@ fn main() {
                 
         // write #entries in clut
         if let Some(file) = &mut asmfile {
-            write!(file, ".byte {:02X}\n", pal.len())
+            write!(file, ".byte {:02X}\n", (pal.len()/3) % 256)
                 .expect("error writing to asm file");
         }
 
