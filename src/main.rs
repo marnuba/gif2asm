@@ -73,9 +73,9 @@ fn main() {
     // write palette
     if let Some(pal) = decoder.global_palette() {
 
-        // write label for clut
+        // write label for clut size
         if let Some(file) = &mut asmfile {
-            write!(file, "\n{}_clut:\n", label)
+            write!(file, "\n{}_clut_size:\n", label)
             .expect("error writing to asm file");
         }
                 
@@ -84,6 +84,12 @@ fn main() {
         if let Some(file) = &mut asmfile {
             write!(file, ".byte {:02X}\n", len)
                 .expect("error writing to asm file");
+        }
+
+        // write label for clut size
+        if let Some(file) = &mut asmfile {
+            write!(file, "\n{}_clut:\n", label)
+            .expect("error writing to asm file");
         }
 
         if let Some(file) = &mut clutfile {
@@ -108,15 +114,15 @@ fn main() {
             }
         }
     }
-
-    // write label for image data
-    if let Some(file) = &mut asmfile {
-        write!(file, "\n{}_img:\n", label)
-        .expect("error writing to asm file");
-    }
     
     // write image data
     while let Some(frame) = decoder.read_next_frame().unwrap() {
+
+        // write label for image size
+        if let Some(file) = &mut asmfile {
+            write!(file, "\n{}_img_size:\n", label)
+            .expect("error writing to asm file");
+        }
 
         // write img dimensions
         if let Some(file) = &mut asmfile {
@@ -138,6 +144,12 @@ fn main() {
                 (frame.height % 256) as u8,
                 (frame.height / 256) as u8,
             ]).expect("error writing to img file");
+        }
+
+        // write label for image data
+        if let Some(file) = &mut asmfile {
+            write!(file, "\n{}_img:\n", label)
+            .expect("error writing to asm file");
         }
 
         for h in 0..frame.height {
