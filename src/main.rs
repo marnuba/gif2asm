@@ -6,17 +6,7 @@ use std::io::Write;
 
 #[derive(Parser, Debug)]
 struct Args {
-
     infile: String,
-
-    //#[arg(short, long)]
-    //outfile: Option<String>,
-
-    //#[arg(short, long)]
-    //palette_file: Option<String>,
-
-    //#[arg(short, long)]
-    //assembler: Option<String>,
 
     #[arg(short, long)]
     bin: bool,
@@ -90,9 +80,15 @@ fn main() {
         }
                 
         // write #entries in clut
+        let len = ((pal.len() / 3) % 256) as u8;
         if let Some(file) = &mut asmfile {
-            write!(file, ".byte {:02X}\n", (pal.len()/3) % 256)
+            write!(file, ".byte {:02X}\n", len)
                 .expect("error writing to asm file");
+        }
+
+        if let Some(file) = &mut clutfile {
+            file.write(&[len])
+                .expect("error writing to clut file");
         }
 
         // write palette
@@ -121,6 +117,29 @@ fn main() {
     
     // write image data
     while let Some(frame) = decoder.read_next_frame().unwrap() {
+
+        // write img dimensions
+        if let Some(file) = &mut asmfile {
+            write!(file, ".byte {:02X} {:02X}\n", 
+                frame.width % 256,
+                frame.width / 256,
+            ).expect("error writing to asm file");
+
+            write!(file, ".byte {:02X} {:02X}\n", 
+                frame.height % 256,
+                frame.height / 256,
+            ).expect("error writing to asm file");
+        }
+
+        if let Some(file) = &mut imgfile {
+            file.write_all(&[
+                (frame.width % 256) as u8,
+                (frame.width / 256) as u8,
+                (frame.height % 256) as u8,
+                (frame.height / 256) as u8,
+            ]).expect("error writing to img file");
+        }
+
         for h in 0..frame.height {
             if let Some(file) = &mut asmfile {
                 write!(file, ".byte").expect("error writing to asm file");
