@@ -11,25 +11,26 @@ Other tools are available to convert images as well (e.g. FoenixIDE). This tool 
 gif2code <INPUT.GIF>
 
 This produces an INPUT.asm file that can be included by the given assembler.
-Supported assembers are:
 
 gif2code --bin <INPUT.GIF>
 
-This produces two files: INPUT.lut and INPUT.bin. These files can be used from an assembler by including them as binary files.
+This produces two files: INPUT.clut and INPUT.bin. These files can be used from an assembler by including them as binary files.
 
 The format of the files is as follows:
 
 ### LUT File
 
-The first byte represents the number of entries.
+The first byte represents the number of entries. The value "00" represents 256 colors, the maximum.
 
-The entries follow at offest 2. Each entry consists of 4 bytes, just as the LUT in the Foenix computers:
+The entries follow at offest 1. Each entry consists of 4 bytes, just as the LUT in the Foenix computers:
 The first three bytes represent the color value in the order B, G, R.
 The fourth byte is reserved for later usage.
 
 ### IMG File
 
-Each byte represents one pixel. The value is the index of the color in the lookup table. The order is line by line from top to bottom, each line from left to right.
+The first 4 bytes represent the width and height of the image data, lo-byte first.
+
+Starting with the 5th byte, each byte represents one pixel. The value is the index of the color in the lookup table. The order is line by line from top to bottom, each line from left to right.
 
 
 
