@@ -126,12 +126,12 @@ fn main() {
 
         // write img dimensions
         if let Some(file) = &mut asmfile {
-            write!(file, ".byte {:02X} {:02X}\n", 
+            write!(file, ".byte {:02X}, {:02X}\n", 
                 frame.width % 256,
                 frame.width / 256,
             ).expect("error writing to asm file");
 
-            write!(file, ".byte {:02X} {:02X}\n", 
+            write!(file, ".byte {:02X}, {:02X}\n", 
                 frame.height % 256,
                 frame.height / 256,
             ).expect("error writing to asm file");
@@ -160,7 +160,7 @@ fn main() {
                     write!(file, " ${:02X},", frame.buffer[ix as usize])
                         .expect("error writing to asm file");
                 }
-                write!(file, " ${:02X}\n", frame.buffer[(h+1) as usize * (frame.width-1) as usize])
+                write!(file, " ${:02X}\n", frame.buffer[(h+1) as usize * (frame.width) as usize - 1])
                     .expect("error writing to asm file");
             }            
         }
